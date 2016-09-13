@@ -5,7 +5,6 @@ import pygame
 # add method to run off other buttons when this button is turned on?
 # use loop to create timers and populate the list
 # use the colors dict
-# add timer title
 # add stop all timers before exit on button push
 # instead of printing valued, pass them to a dict to sum them at exit
 
@@ -14,7 +13,7 @@ class Timer:
     def __init__(self, name, color, target_posn, height, width):
         self.my_h = height
         self.my_w = width
-        (self.my_x, self.my_y), self.posn = target_posn, target_posn
+        (self.my_x, self.my_y) = self.posn = target_posn
         self.color = color
         self.name = name
         self.is_on = 0
@@ -31,11 +30,15 @@ class Timer:
         else:
             pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
 
+        # label the boxes
+        font = pygame.font.SysFont("comicsansms",20)
+        label = font.render(self.name,0,(0,0,0))
+        target_surface.blit(label, (self.my_x+5,self.my_y-25))
+
         # draw the time
         seconds = self.total_seconds // 60 % 60
         minutes = self.total_seconds // 60 // 60 % 60
         output_string = "{1:02}:{0:02}".format(seconds, minutes)
-        font = pygame.font.SysFont("comicsansms",20)
         text_surf = font.render(output_string,0,(0,0,0))
         text_rect = text_surf.get_rect()
         text_rect.center = ( (self.my_x+(self.my_h/2)), (self.my_y+(self.my_w/2)) )
@@ -65,8 +68,8 @@ def draw_board():
 
     # Instantiate two duke instances, put them on the chessboard
     timer1 = Timer("1 LIVE",(255,0,0),(45,40),100,50)
-    timer2 = Timer("1 DEAD",(0,0,255),(155,40),100,50)
-    timer3 = Timer("2 LIVE",(255,0,0),(45,115),100,50)
+    timer2 = Timer("2 LIVE",(0,0,255),(155,40),100,50)
+    timer3 = Timer("1 DEAD",(255,0,0),(45,115),100,50)
     timer4 = Timer("2 DEAD",(0,0,255),(155,115),100,50)
 
     # Add them to the list of timers which our game loop manages
