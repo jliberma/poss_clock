@@ -1,10 +1,10 @@
 import pygame
 
 # write results to a file
-# add a color to the timer draw
-# add method to run off other buttons when this button is turned on?
-# use loop to create timers and populate the list
-# use the colors dict
+# add a color dcit to the timer draw
+# add method to turn off other buttons when this button is turned on?
+# use loop to create timers and populate the list using an offset
+# use the colors dict: red, blue, black, white, green
 # add stop all timers before exit on button push
 # instead of printing valued, pass them to a dict to sum them at exit
 
@@ -30,7 +30,7 @@ class Timer:
         else:
             pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
 
-        # label the boxes
+        # label the timers
         font = pygame.font.SysFont("comicsansms",20)
         label = font.render(self.name,0,(0,0,0))
         target_surface.blit(label, (self.my_x+5,self.my_y-25))
