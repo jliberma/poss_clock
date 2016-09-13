@@ -1,20 +1,22 @@
 import pygame
 
 # write results to a file
-# add a clock name for writing results by name
-# add a color to the clock draw
-# add height and width to class definition for CLockSprite object
+# add a color to the timer draw
 # add method to run off other buttons when this button is turned on?
-# use loop to create clocks and populate the list
-# move self.posn calcl & vairables to init def and re-use in other methods
+# use loop to create timers and populate the list
 # use the colors dict
-# use consistentand sensible naming for classes, variables, objects
+# add timer title
+# add stop all timers before exit on button push
+# instead of printing valued, pass them to a dict to sum them at exit
 
-class ClockSprite:
+class Timer:
 
-    def __init__(self, color, target_posn):
-        self.posn = target_posn
+    def __init__(self, name, color, target_posn, height, width):
+        self.my_h = height
+        self.my_w = width
+        (self.my_x, self.my_y), self.posn = target_posn, target_posn
         self.color = color
+        self.name = name
         self.is_on = 0
         self.total_seconds = 0
 
@@ -23,62 +25,55 @@ class ClockSprite:
             self.total_seconds += 1
 
     def draw(self, target_surface):
+        # highlight the timer that is on
         if self.is_on == True:
-            pygame.draw.rect(target_surface, (0,255,0), (self.posn,(100,50)))
+            pygame.draw.rect(target_surface, (0,255,0), (self.posn,(self.my_h,self.my_w)))
         else:
-            pygame.draw.rect(target_surface, self.color, (self.posn,(100,50)))
+            pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
 
-        # move this into the is_on loop
-	# add a clock name to the is_off loop
+        # draw the time
         seconds = self.total_seconds // 60 % 60
         minutes = self.total_seconds // 60 // 60 % 60
         output_string = "{1:02}:{0:02}".format(seconds, minutes)
         font = pygame.font.SysFont("comicsansms",20)
-        textSurf = font.render(output_string,0,(0,0,0))
-        textRect = textSurf.get_rect()
-        (my_x, my_y) = self.posn
-        my_width = 100
-        my_height = 50
-        textRect.center = ( (my_x+(my_width/2)), (my_y+(my_height/2)) )
-        target_surface.blit(textSurf, textRect)
+        text_surf = font.render(output_string,0,(0,0,0))
+        text_rect = text_surf.get_rect()
+        text_rect.center = ( (self.my_x+(self.my_h/2)), (self.my_y+(self.my_w/2)) )
+        target_surface.blit(text_surf, text_rect)
 
     def handle_click(self):
         if self.is_on == True:
             self.is_on = False
+            print(self.name,": ",self.total_seconds // 60)
         else:
             self.is_on = True
-        print(self.total_seconds // 60)
 
     def contains_point(self, pt):
-        (my_x, my_y) = self.posn
-        my_width = 100
-        my_height = 50
         (x, y) = pt
-        return ( x >= my_x and x < my_x + my_width and
-                 y >= my_y and y < my_y + my_height)
+        return ( x >= self.my_x and x < self.my_x + self.my_h and
+                 y >= self.my_y and y < self.my_y + self.my_w)
 
 def draw_board():
 
     pygame.init()
-    colors = [(255,255,255), (0,0,0)]    # Set up colors [red, black]
 
     # Create the surface of (width, height), and its window.
-    surface = pygame.display.set_mode((360, 360))
+    surface = pygame.display.set_mode((300, 200))
     pygame.display.set_caption("Time of possession")
 
-    all_clocks = []      # Keep a list of all sprites in the game
+    all_timers = []      # Keep a list of all timers in the game
 
     # Instantiate two duke instances, put them on the chessboard
-    clock1 = ClockSprite((255,0,0),(80,100))
-    clock2 = ClockSprite((0,0,255),(190,100))
-    clock3 = ClockSprite((255,0,0),(80,160))
-    clock4 = ClockSprite((0,0,255),(190,160))
+    timer1 = Timer("1 LIVE",(255,0,0),(45,40),100,50)
+    timer2 = Timer("1 DEAD",(0,0,255),(155,40),100,50)
+    timer3 = Timer("2 LIVE",(255,0,0),(45,115),100,50)
+    timer4 = Timer("2 DEAD",(0,0,255),(155,115),100,50)
 
-    # Add them to the list of sprites which our game loop manages
-    all_clocks.append(clock1)
-    all_clocks.append(clock2)
-    all_clocks.append(clock3)
-    all_clocks.append(clock4)
+    # Add them to the list of timers which our game loop manages
+    all_timers.append(timer1)
+    all_timers.append(timer2)
+    all_timers.append(timer3)
+    all_timers.append(timer4)
 
     while True:
 
@@ -95,21 +90,21 @@ def draw_board():
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
             posn_of_click = ev.dict["pos"]
-            for sprite in all_clocks:
-                if sprite.contains_point(posn_of_click):
-                    sprite.handle_click()
+            for timer in all_timers:
+                if timer.contains_point(posn_of_click):
+                    timer.handle_click()
                     break
 
-        # Ask every sprite to update itself.
-        for sprite in all_clocks:
-            sprite.update()
+        # Ask every timer to update itself.
+        for timer in all_timers:
+            timer.update()
 
         # Draw a surface
         surface.fill((255,255,255))
 
-        # Ask every sprite to draw itself.
-        for sprite in all_clocks:
-            sprite.draw(surface)
+        # Ask every timer to draw itself.
+        for timer in all_timers:
+            timer.draw(surface)
 
         pygame.display.flip()
 
