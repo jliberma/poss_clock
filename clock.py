@@ -1,10 +1,9 @@
 import pygame
+from pygame.locals import Color
 
 # write results to a file
-# add a color dcit to the timer draw
 # add method to turn off other buttons when this button is turned on?
 # use loop to create timers and populate the list using an offset
-# use the colors dict: red, blue, black, white, green
 # add stop all timers before exit on button push
 # instead of printing valued, pass them to a dict to sum them at exit
 
@@ -26,13 +25,13 @@ class Timer:
     def draw(self, target_surface):
         # highlight the timer that is on
         if self.is_on == True:
-            pygame.draw.rect(target_surface, (0,255,0), (self.posn,(self.my_h,self.my_w)))
+            pygame.draw.rect(target_surface, Color("green"), (self.posn,(self.my_h,self.my_w)))
         else:
             pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
 
         # label the timers
         font = pygame.font.SysFont("comicsansms",20)
-        label = font.render(self.name,0,(0,0,0))
+        label = font.render(self.name,0,Color("black"))
         target_surface.blit(label, (self.my_x+5,self.my_y-25))
 
         # draw the time
@@ -67,10 +66,10 @@ def draw_board():
     all_timers = []      # Keep a list of all timers in the game
 
     # Instantiate two duke instances, put them on the chessboard
-    timer1 = Timer("1 LIVE",(255,0,0),(45,40),100,50)
-    timer2 = Timer("2 LIVE",(0,0,255),(155,40),100,50)
-    timer3 = Timer("1 DEAD",(255,0,0),(45,115),100,50)
-    timer4 = Timer("2 DEAD",(0,0,255),(155,115),100,50)
+    timer1 = Timer("1 LIVE",Color("red"),(45,40),100,50)
+    timer2 = Timer("1 DEAD",Color("red"),(45,115),100,50)
+    timer3 = Timer("2 LIVE",Color("blue"),(155,40),100,50)
+    timer4 = Timer("2 DEAD",Color("blue"),(155,115),100,50)
 
     # Add them to the list of timers which our game loop manages
     all_timers.append(timer1)
@@ -103,7 +102,7 @@ def draw_board():
             timer.update()
 
         # Draw a surface
-        surface.fill((255,255,255))
+        surface.fill(Color("white"))
 
         # Ask every timer to draw itself.
         for timer in all_timers:
