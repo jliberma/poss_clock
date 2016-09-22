@@ -23,25 +23,22 @@ class Timer:
             self.total_seconds += 1
 
     def draw(self, target_surface):
+        font = pygame.font.SysFont("comicsansms",20)
+
         # highlight the timer that is on
         if self.is_on == True:
             pygame.draw.rect(target_surface, Color("green"), (self.posn,(self.my_h,self.my_w)))
+            seconds = self.total_seconds // 60 % 60
+            minutes = self.total_seconds // 60 // 60 % 60
+            output_string = "{1:02}:{0:02}".format(seconds, minutes)
+            text_surf = font.render(output_string,0,(0,0,0))
+            text_rect = text_surf.get_rect()
+            text_rect.center = ( (self.my_x+(self.my_h/2)), (self.my_y+(self.my_w/2)) )
+            target_surface.blit(text_surf, text_rect)
         else:
             pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
-
-        # label the timers
-        font = pygame.font.SysFont("comicsansms",20)
-        label = font.render(self.name,0,Color("black"))
-        target_surface.blit(label, (self.my_x+5,self.my_y-25))
-
-        # draw the time
-        seconds = self.total_seconds // 60 % 60
-        minutes = self.total_seconds // 60 // 60 % 60
-        output_string = "{1:02}:{0:02}".format(seconds, minutes)
-        text_surf = font.render(output_string,0,(0,0,0))
-        text_rect = text_surf.get_rect()
-        text_rect.center = ( (self.my_x+(self.my_h/2)), (self.my_y+(self.my_w/2)) )
-        target_surface.blit(text_surf, text_rect)
+            label = font.render(self.name,0,Color("white"))
+            target_surface.blit(label, (self.my_x+10, self.my_y+10))
 
     def handle_click(self):
         if self.is_on == True:
@@ -54,6 +51,9 @@ class Timer:
         (x, y) = pt
         return ( x >= self.my_x and x < self.my_x + self.my_h and
                  y >= self.my_y and y < self.my_y + self.my_w)
+
+    def timer_exit(self):
+        return
 
 def draw_board():
 
