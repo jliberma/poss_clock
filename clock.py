@@ -3,9 +3,9 @@ from pygame.locals import Color
 
 # write results to a file
 # add method to turn off other buttons when this button is turned on?
-# use loop to create timers and populate the list using an offset
 # add stop all timers before exit on button push
-# instead of printing valued, pass them to a dict to sum them at exit
+# make buttons fill the surface so there are no whitespace clicks
+# use loop to create timers and populate the list using an offset
 
 class Timer:
 
@@ -17,6 +17,7 @@ class Timer:
         self.name = name
         self.is_on = 0
         self.total_seconds = 0
+        self.count = 0
 
     def update(self):
         if self.is_on == True:
@@ -43,53 +44,53 @@ class Timer:
     def handle_click(self):
         if self.is_on == True:
             self.is_on = False
-            print(self.name,": ",self.total_seconds // 60)
+            #print(self.name,self.count,self.total_seconds // 60,sep=",")
         else:
             self.is_on = True
+            self.count += 1
 
     def contains_point(self, pt):
         (x, y) = pt
         return ( x >= self.my_x and x < self.my_x + self.my_h and
                  y >= self.my_y and y < self.my_y + self.my_w)
 
+    def halt(self):
+        self.is_on = False
+
     def timer_exit(self):
         return
 
-def draw_board():
+def draw_timers():
 
     pygame.init()
 
-    # Create the surface of (width, height), and its window.
+    # Create the surface
     surface = pygame.display.set_mode((300, 200))
     pygame.display.set_caption("Time of possession")
 
-    all_timers = []      # Keep a list of all timers in the game
+    # keep a list of timers
+    all_timers = []
 
-    # Instantiate two duke instances, put them on the chessboard
-    timer1 = Timer("1 LIVE",Color("red"),(45,40),100,50)
-    timer2 = Timer("1 DEAD",Color("red"),(45,115),100,50)
-    timer3 = Timer("2 LIVE",Color("blue"),(155,40),100,50)
-    timer4 = Timer("2 DEAD",Color("blue"),(155,115),100,50)
-
-    # Add them to the list of timers which our game loop manages
-    all_timers.append(timer1)
-    all_timers.append(timer2)
-    all_timers.append(timer3)
-    all_timers.append(timer4)
+    # Instantiate the timers
+    timer1 = all_timers.append(Timer("1_LIVE",Color("red"),(45,40),100,50))
+    timer2 = all_timers.append(Timer("1_DEAD",Color("red"),(45,115),100,50))
+    timer3 = all_timers.append(Timer("2_LIVE",Color("blue"),(155,40),100,50))
+    timer4 = all_timers.append(Timer("2_DEAD",Color("blue"),(155,115),100,50))
 
     while True:
 
-        # Look for an event from keyboard, mouse, etc.
+        # Look for keyboard, mouse events
         ev = pygame.event.poll()
-#        if ev.type != pygame.NOEVENT:   # Only print if it is interesting!
+#        if ev.type != pygame.NOEVENT:   # print interesting events
 #            print(ev)
         if ev.type == pygame.QUIT:
             break;
         if ev.type == pygame.KEYDOWN:
             key = ev.dict["key"]
-            if key == 27:                  # On Escape key ...
-                break                      #   leave the game loop.
+            if key == 27:                  # Exit on Escape key
+                break
 
+        # Handle mouse clicks
         if ev.type == pygame.MOUSEBUTTONDOWN:
             posn_of_click = ev.dict["pos"]
             for timer in all_timers:
@@ -97,14 +98,14 @@ def draw_board():
                     timer.handle_click()
                     break
 
-        # Ask every timer to update itself.
+        # Update every timer
         for timer in all_timers:
             timer.update()
 
-        # Draw a surface
+        # Draw the surface
         surface.fill(Color("white"))
 
-        # Ask every timer to draw itself.
+        # Draw every timer
         for timer in all_timers:
             timer.draw(surface)
 
@@ -112,6 +113,9 @@ def draw_board():
 
     pygame.quit()
 
+    # print results
+    for timer in all_timers:
+        print(timer.name,timer.count,timer.total_seconds // 60,sep=",")
 
 if __name__ == "__main__":
-    draw_board()
+    draw_timers()
