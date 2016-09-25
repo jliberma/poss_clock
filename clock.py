@@ -7,7 +7,7 @@
 
 import pygame
 from pygame.locals import Color
-from sys import argv
+from sys import argv, exit
 
 
 class Timer:
@@ -125,5 +125,10 @@ def draw_timers():
     target.close()
 
 if __name__ == "__main__":
-    script, filename = argv
+    try:
+        filename = argv[1]
+    except IndexError:
+        print("Usage: clock.py <output_filename>")
+        exit(1)
+
     draw_timers()
