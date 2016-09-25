@@ -1,9 +1,14 @@
+# This program creates a possession timer that tracks:
+# live ball time of possession for two teams
+# dead ball time of possession for two teams
+# and writes the total time of possession for both teams
+# to a file.
+# Please contact jliberman@utexas.edu with questions.
+
 import pygame
 from pygame.locals import Color
+from sys import argv
 
-# write results to a file
-# make buttons fill the surface so there are no whitespace clicks
-# use loop to create timers and populate the list using an offset
 
 class Timer:
 
@@ -24,7 +29,7 @@ class Timer:
     def draw(self, target_surface):
         font = pygame.font.SysFont("comicsansms",20)
 
-        # highlight the timer that is on
+        # highlight the active timer
         if self.is_on == True:
             pygame.draw.rect(target_surface, Color("green"), (self.posn,(self.my_h,self.my_w)))
             seconds = self.total_seconds // 60 % 60
@@ -32,20 +37,18 @@ class Timer:
             output_string = "{1:02}:{0:02}".format(seconds, minutes)
             text_surf = font.render(output_string,0,(0,0,0))
             text_rect = text_surf.get_rect()
-            text_rect.center = ( (self.my_x+(self.my_h/2)), (self.my_y+(self.my_w/2)) )
+            text_rect.center = ( (self.my_x+(self.my_w/2)), (self.my_y+(self.my_w/2)) )
             target_surface.blit(text_surf, text_rect)
         else:
             pygame.draw.rect(target_surface, self.color, (self.posn,(self.my_h,self.my_w)))
             label = font.render(self.name,0,Color("white"))
-            target_surface.blit(label, (self.my_x+10, self.my_y+10))
+            label_rect = label.get_rect()
+            label_rect.center = ( (self.my_x+(self.my_w/2)), (self.my_y+(self.my_w/2)) )
+            target_surface.blit(label,label_rect)
 
     def handle_click(self):
-        if self.is_on == True:
-            self.is_on = False
-            #print(self.name,self.count,self.total_seconds // 60,sep=",")
-        else:
-            self.is_on = True
-            self.count += 1
+        self.is_on = True
+        self.count += 1
 
     def contains_point(self, pt):
         (x, y) = pt
@@ -70,16 +73,16 @@ def draw_timers():
     all_timers = []
 
     # Instantiate the timers
-    timer1 = all_timers.append(Timer("1_LIVE",Color("red"),(45,40),100,50))
-    timer2 = all_timers.append(Timer("1_DEAD",Color("red"),(45,115),100,50))
-    timer3 = all_timers.append(Timer("2_LIVE",Color("blue"),(155,40),100,50))
-    timer4 = all_timers.append(Timer("2_DEAD",Color("blue"),(155,115),100,50))
+    timer1 = all_timers.append(Timer("1_LIVE",Color("red"),(1,1),150,100))
+    timer2 = all_timers.append(Timer("1_DEAD",Color("red"),(1,101),150,100))
+    timer3 = all_timers.append(Timer("2_LIVE",Color("blue"),(150,1),150,100))
+    timer4 = all_timers.append(Timer("2_DEAD",Color("blue"),(150,101),150,100))
 
     while True:
 
         # Look for keyboard, mouse events
         ev = pygame.event.poll()
-#        if ev.type != pygame.NOEVENT:   # print interesting events
+#        if ev.type != pygame.NOEVENT:      # print interesting events
 #            print(ev)
         if ev.type == pygame.QUIT:
             break;
@@ -87,6 +90,9 @@ def draw_timers():
             key = ev.dict["key"]
             if key == 27:                  # Exit on Escape key
                 break
+            if key == pygame.K_p:          # Pause all timers on p key
+                for timer in all_timers:
+                    timer.halt()
 
         # Handle mouse clicks
         if ev.type == pygame.MOUSEBUTTONDOWN:
@@ -111,9 +117,13 @@ def draw_timers():
 
     pygame.quit()
 
-    # print results
+    # write results to a file
+    target = open(filename, 'w')
     for timer in all_timers:
-        print(timer.name,timer.count,timer.total_seconds // 60,sep=",")
+        output_string = "{},{},{}\n".format(timer.name,timer.count,timer.total_seconds // 60)
+        target.write(output_string)
+    target.close()
 
 if __name__ == "__main__":
+    script, filename = argv
     draw_timers()
