@@ -3,7 +3,7 @@
 # dead ball time of possession for two teams
 # and writes the total time of possession for both teams
 # to a file.
-# Please contact jliberman@utexas.edu with questions.
+# jliberman@utexas.edu
 
 import pygame
 from pygame.locals import Color
