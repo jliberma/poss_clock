@@ -2,8 +2,6 @@ import pygame
 from pygame.locals import Color
 
 # write results to a file
-# add method to turn off other buttons when this button is turned on?
-# add stop all timers before exit on button push
 # make buttons fill the surface so there are no whitespace clicks
 # use loop to create timers and populate the list using an offset
 
@@ -94,9 +92,9 @@ def draw_timers():
         if ev.type == pygame.MOUSEBUTTONDOWN:
             posn_of_click = ev.dict["pos"]
             for timer in all_timers:
+                timer.halt()
                 if timer.contains_point(posn_of_click):
                     timer.handle_click()
-                    break
 
         # Update every timer
         for timer in all_timers:
